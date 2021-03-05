@@ -329,12 +329,14 @@ class Web3Client {
     @required ContractFunction function,
     @required List<dynamic> params,
     BlockNum atBlock,
+    BigInt amountOfGas,
   }) async {
     final encodedResult = await callRaw(
       sender: sender,
       contract: contract.address,
       data: function.encodeCall(params),
       atBlock: atBlock,
+      amountOfGas: amountOfGas,
     );
 
     return function.decodeReturnValues(encodedResult);
@@ -387,10 +389,14 @@ class Web3Client {
       {EthereumAddress sender,
       @required EthereumAddress contract,
       @required Uint8List data,
-      BlockNum atBlock}) {
+      BlockNum atBlock,
+      BigInt amountOfGas}) {
+    print("web3dart ABOUT TO eth_CALL!!!! $amountOfGas with price");
     final call = {
       'to': contract.hex,
       'data': bytesToHex(data, include0x: true, padToEvenLength: true),
+      if (amountOfGas != null) 'gas': '0x${amountOfGas.toRadixString(16)}',
+      // "gasPrice": "0x9184e72a000",
     };
 
     if (sender != null) {
